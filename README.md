@@ -18,25 +18,25 @@ Este teste prático foi desenvolvido com:
 | `/purchase` | `POST` | pública | Realizar uma compra informando o produto |
 | `/gateway/active` | `POST` | privada | Ativar/desativar um gateway |
 | `/gateway/priority` | `POST` | privada | Alterar a prioridade de um gateway |
-| `/user` | `GET` | privada | Listar todos os usuários |
-| `/user` | `POST` | privada | Criar um usuário |
-| `/user` | `PUT` | privada | Editar um usuário |
-| `/user` | `DELETE` | privada | Apagar um usuário |
-| `/product` | `GET` | privada | Listar todos os produtos |
-| `/product` | `POST` | privada | Criar um produto |
-| `/product` | `PUT` | privada | Editar um produto |
-| `/product` | `DELETE` | privada | Apagar um produto |
-| `/client/list` | `GET` | privada | Listar todos os clientes |
-| `/client/detail` | `GET` | privada | Detalhes do cliente e todas suas compras |
-| `/purchase/list` | `GET` | privada | Listar todas as compras |
-| `/purchase/detail` | `GET` | privada | Detalhes de uma compra |
+| `/users` | `GET` | privada | Listar todos os usuários |
+| `/users` | `POST` | privada | Criar um usuário |
+| `/users/:id` | `PUT` | privada | Editar um usuário |
+| `/users/:id` | `DELETE` | privada | Apagar um usuário |
+| `/products` | `GET` | privada | Listar todos os produtos |
+| `/products` | `POST` | privada | Criar um produto |
+| `/products/:id` | `PUT` | privada | Editar um produto |
+| `/products/:id` | `DELETE` | privada | Apagar um produto |
+| `/clients` | `GET` | privada | Listar todos os clientes |
+| `/clients/:id?` | `GET` | privada | Detalhes do cliente e todas suas compras |
+| `/purchases` | `GET` | privada | Listar todas as compras |
+| `/purchases/:id?` | `GET` | privada | Detalhes de uma compra |
 | `/reimburse` | `POST` | privada | Realizar reembolso de uma compra junto ao gateway com validação por roles |
 
 </br>
 
 ## Roadmap
 
-- [ ] Criar docker compose configurando as Gateways e o DB.
+- [x] Criar docker compose configurando as Gateways e o DB.
 - [ ] Implementar Controller, Models, Migration e Testes de usuários.
 - [ ] Implementar Controller, Models, Migration e Testes de produtos.
 - [ ] Implementar Controller, Models, Migration e Testes de clientes.
