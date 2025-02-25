@@ -13,7 +13,7 @@ Este teste prático foi desenvolvido com:
 ### Rotas
 
 | Rota | Método | Tipo | Descrição |
-| ---- | ---- | --------- |
+| --- | --- | --- | --- |
 | `/login` | `POST` | pública | Realizar o login |
 | `/purchase` | `POST` | pública | Realizar uma compra informando o produto |
 | `/gateway/active` | `POST` | privada | Ativar/desativar um gateway |
