@@ -34,21 +34,21 @@ jobs:
       - name: Run migrations & seeds
         run: npm run migrations:fresh
         env:
-          APP_KEY=8888X_gsMas98f5W76IDlmxjQ6_f8798
-          NODE_ENV=test
-          DB_HOST=mysql
-          DB_PORT=3306
-          DB_USER=root
-          DB_PASSWORD=adonis
-          DB_DATABASE=adonis
-      
+          APP_KEY: 8888X_gsMas98f5W76IDlmxjQ6_f8798
+          NODE_ENV: test
+          DB_HOST: mysql
+          DB_PORT: 3306
+          DB_USER: root
+          DB_PASSWORD: adonis
+          DB_DATABASE: adonis
+
       - name: Run tests
         run: node ace test
         env:
-          APP_KEY=8889X_gsMas98f5W76IDlmxjQ6_f8798
-          NODE_ENV=test
-          DB_HOST=mysql
-          DB_PORT=3306
-          DB_USER=root
-          DB_PASSWORD=adonis
-          DB_DATABASE=adonis
+          APP_KEY: 8889X_gsMas98f5W76IDlmxjQ6_f8798
+          NODE_ENV: test
+          DB_HOST: mysql
+          DB_PORT: 3306
+          DB_USER: root
+          DB_PASSWORD: adonis
+          DB_DATABASE: adonis
