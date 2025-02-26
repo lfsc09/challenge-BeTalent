@@ -18,8 +18,8 @@ export default class UsersController {
     const user = await User.findOrFail(params.id)
     const input = await request.validateUsing(updateUserValidator)
     user.merge(input)
-    await user.save()
-    return response.status(200)
+    const output = await user.save()
+    return response.status(output.$isPersisted ? 200 : 400)
   }
 
   async deleteUser({ response, params }: HttpContext) {
