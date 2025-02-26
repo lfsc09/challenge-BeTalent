@@ -4,6 +4,7 @@ import app from '@adonisjs/core/services/app'
 import type { Config } from '@japa/runner/types'
 import { pluginAdonisJS } from '@japa/plugin-adonisjs'
 import testUtils from '@adonisjs/core/services/test_utils'
+import { spec, github } from '@japa/runner/reporters'
 
 /**
  * This file is imported by the "bin/test.ts" entrypoint file
@@ -35,4 +36,16 @@ export const configureSuite: Config['configureSuite'] = (suite) => {
   if (['browser', 'functional', 'e2e'].includes(suite.name)) {
     return suite.setup(() => testUtils.httpServer().start())
   }
+}
+
+/**
+ * Configure reporters to use for the test
+ */
+const activated = ['spec']
+if (process.env.GITHUB_ACTIONS === 'true') {
+  activated.push('github')
+}
+export const reporters: Config['reporters'] = {
+  activated,
+  list: [spec(), github()],
 }
