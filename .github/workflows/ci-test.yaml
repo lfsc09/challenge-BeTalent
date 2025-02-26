@@ -34,6 +34,9 @@ jobs:
       - name: Run migrations & seeds
         run: npm run migrations:fresh
         env:
+          PORT: 3333
+          HOST: localhost
+          LOG_LEVEL: info
           APP_KEY: 8888X_gsMas98f5W76IDlmxjQ6_f8798
           NODE_ENV: test
           DB_HOST: mysql
@@ -45,6 +48,9 @@ jobs:
       - name: Run tests
         run: node ace test
         env:
+          PORT: 3333
+          HOST: localhost
+          LOG_LEVEL: info
           APP_KEY: 8889X_gsMas98f5W76IDlmxjQ6_f8798
           NODE_ENV: test
           DB_HOST: mysql
