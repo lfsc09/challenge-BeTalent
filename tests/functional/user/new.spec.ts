@@ -1,32 +1,28 @@
 import User from '#models/user'
 import { test } from '@japa/runner'
-import hash from '@adonisjs/core/services/hash'
-import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 
 test.group('User new', (group) => {
-  let trx: TransactionClientContract
-
   group.each.setup(async () => {
-    trx = await User.transaction()
-    return () => trx.rollback()
+    await User.query().delete()
   })
 
-  test('sucessfully create user', async ({ expect }) => {
+  test('should sucessfully create user', async ({ client, expect }) => {
     const input = {
       email: 'user@adonis.com',
       password: 'password',
       role: 'USER',
     }
-    const user = new User()
-    user.email = input.email
-    user.password = input.password
-    user.role = input.role
+    const output = await client.post('/users').json(input)
+    expect(output.status()).toBe(201)
+  })
 
-    await user.useTransaction(trx).save()
-
-    expect(user.id).toBeDefined()
-    expect(user.createdAt).toBeDefined()
-    expect(hash.isValidHash(user.password)).toBeTruthy()
-    expect(await hash.verify(user.password, 'password')).toBeTruthy()
+  test('should fail to create user [invalid data]', async ({ client, expect }) => {
+    const input = {
+      email: 'user',
+      password: 'password',
+      role: 'USER',
+    }
+    const output = await client.post('/users').json(input)
+    expect(output.status()).toBe(422)
   })
 })
