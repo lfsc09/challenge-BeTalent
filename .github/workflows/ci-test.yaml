@@ -5,22 +5,39 @@ on:
       - main
       - develop
 jobs:
-  angular-tests:
+  adonisjs-tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [22.x]
+
+    container:
+      image: node:${{ matrix.node-version }}
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: adonis
+          MYSQL_DATABASE: adonis
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
       - name: Install dependencies
         run: npm ci
       
-      - run: npm run test
+      - name: Run tests
+        run: node ace test
+        env:
+          APP_KEY=8889X_gsMas98f5W76IDlmxjQ6_f8798
+          NODE_ENV=test
+          DB_HOST=mysql
+          DB_PORT=3306
+          DB_USER=root
+          DB_PASSWORD=adonis
+          DB_DATABASE=adonis
