@@ -38,8 +38,8 @@ Este teste prático foi desenvolvido com:
 ## Roadmap
 
 - [x] Criar docker compose configurando as Gateways e o DB.
-- [ ] Implementar Controller, Validações, Models, Migration e Testes de usuários.
-- [ ] Implementar Controller, Validações, Models, Migration e Testes de produtos.
+- [x] Implementar Controller, Validações, Models, Migration e Testes de usuários.
+- [x] Implementar Controller, Validações, Models, Migration e Testes de produtos.
 - [ ] Implementar Controller, Models, Migration e Testes de clientes.
 - [ ] Implementar Controller, Models, Migration e Testes de gateways.
 - [ ] Implementar Controller, Models, Migration e Testes de transações.
