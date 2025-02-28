@@ -32,7 +32,7 @@ test.group('User edit', (group) => {
 
   test('should fail to edit user [user not found]', async ({ client, expect }) => {
     const input = {
-      password: 'passw',
+      password: 'password',
     }
     const output = await client.put(`/users/${crypto.randomUUID()}`).json(input)
     expect(output.status()).toBe(404)
