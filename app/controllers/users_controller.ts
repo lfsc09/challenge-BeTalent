@@ -1,30 +1,35 @@
-import User from '#models/user'
+import { CreateUser } from '#services/usecase/user/create_user'
+import { DeleteUser } from '#services/usecase/user/delete_user'
+import { ListUsers } from '#services/usecase/user/list_users'
+import { UpdateUser } from '#services/usecase/user/update_user'
 import { createUserValidator, updateUserValidator } from '#validators/user'
+import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class UsersController {
-  async allUsers({ response }: HttpContext) {
-    const users = await User.all()
+  @inject()
+  async allUsers({ response }: HttpContext, listUsers: ListUsers) {
+    const users = await listUsers.execute()
     return response.status(200).json(users)
   }
 
-  async newUser({ request, response }: HttpContext) {
+  @inject()
+  async newUser({ request, response }: HttpContext, createUser: CreateUser) {
     const input = await request.validateUsing(createUserValidator)
-    const output = await User.create(input)
-    return response.status(output.$isPersisted ? 201 : 400)
+    await createUser.execute(input)
+    return response.status(201)
   }
 
-  async editUser({ request, response, params }: HttpContext) {
-    const user = await User.findOrFail(params.id)
+  @inject()
+  async editUser({ request, response, params }: HttpContext, updateUser: UpdateUser) {
     const input = await request.validateUsing(updateUserValidator)
-    user.merge(input)
-    const output = await user.save()
-    return response.status(output.$isPersisted ? 200 : 400)
+    await updateUser.execute(params.id, input)
+    return response.status(200)
   }
 
-  async deleteUser({ response, params }: HttpContext) {
-    const user = await User.findOrFail(params.id)
-    await user.delete()
+  @inject()
+  async deleteUser({ response, params }: HttpContext, deleteUser: DeleteUser) {
+    await deleteUser.execute(params.id)
     return response.status(200)
   }
 }
