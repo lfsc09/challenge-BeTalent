@@ -14,10 +14,10 @@ export default class AppProvider {
    * The container bindings have booted
    */
   async boot() {
-    const { UserDAODatabase } = await import('#services/dao/user/user_database')
+    const { UserDAODatabase } = await import('#services/dao/user_database')
     this.app.container.bind(UserDAO, () => this.app.container.make(UserDAODatabase))
 
-    const { ProductDAODatabase } = await import('#services/dao/user/product_database')
+    const { ProductDAODatabase } = await import('#services/dao/product_database')
     this.app.container.bind(ProductDAO, () => this.app.container.make(ProductDAODatabase))
   }
 
