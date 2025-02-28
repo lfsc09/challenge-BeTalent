@@ -103,3 +103,5 @@ docker compose -f ./docker/compose.yaml --profile production down
 </br>
 
 ## Dificuldades
+
+- Decidir se nos testes dos endpoints usava um Faker em memória dos serviços `*_database.ts`, ou se dava hit no database. Como o Model do `adonis` lida automaticamente retornando `404` nos `findOrFail` usar o serviço com database ficava mais simples nos testes. Porém usando o database requeri que o `docker compose` seja rodado antes de executar testes, consumindo mais recursos.
