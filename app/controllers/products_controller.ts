@@ -1,30 +1,35 @@
-import Product from '#models/product'
+import { CreateProduct } from '#services/usecase/product/create_product'
+import { DeleteProduct } from '#services/usecase/product/delete_product'
+import { ListProducts } from '#services/usecase/product/list_products'
+import { UpdateProduct } from '#services/usecase/product/update_product'
 import { createProductValidator, updateProductValidator } from '#validators/product'
+import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class ProductsController {
-  async allProducts({ response }: HttpContext) {
-    const products = await Product.all()
-    return response.status(200).json(products)
+  @inject()
+  async allProducts({ response }: HttpContext, listProducts: ListProducts) {
+    const users = await listProducts.execute()
+    return response.status(200).json(users)
   }
 
-  async newProduct({ request, response }: HttpContext) {
+  @inject()
+  async newProduct({ request, response }: HttpContext, createProduct: CreateProduct) {
     const input = await request.validateUsing(createProductValidator)
-    const output = await Product.create(input)
-    return response.status(output.$isPersisted ? 201 : 400)
+    await createProduct.execute(input)
+    return response.status(201)
   }
 
-  async editProduct({ request, response, params }: HttpContext) {
-    const product = await Product.findOrFail(params.id)
+  @inject()
+  async editProduct({ request, response, params }: HttpContext, updateProduct: UpdateProduct) {
     const input = await request.validateUsing(updateProductValidator)
-    product.merge(input)
-    const output = await product.save()
-    return response.status(output.$isPersisted ? 200 : 400)
+    await updateProduct.execute(params.id, input)
+    return response.status(200)
   }
 
-  async deleteProduct({ response, params }: HttpContext) {
-    const product = await Product.findOrFail(params.id)
-    await product.delete()
+  @inject()
+  async deleteProduct({ response, params }: HttpContext, deleteProduct: DeleteProduct) {
+    await deleteProduct.execute(params.id)
     return response.status(200)
   }
 }
