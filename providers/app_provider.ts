@@ -1,5 +1,6 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import { UserDAO } from '../contracts/user_dao.js'
+import { ProductDAO } from '../contracts/product_dao.js'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -15,6 +16,9 @@ export default class AppProvider {
   async boot() {
     const { UserDAODatabase } = await import('#services/dao/user/user_database')
     this.app.container.bind(UserDAO, () => this.app.container.make(UserDAODatabase))
+
+    const { ProductDAODatabase } = await import('#services/dao/user/product_database')
+    this.app.container.bind(ProductDAO, () => this.app.container.make(ProductDAODatabase))
   }
 
   /**
