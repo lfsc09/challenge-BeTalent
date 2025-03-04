@@ -3,9 +3,9 @@ import { test } from '@japa/runner'
 import Big from 'big.js'
 
 test.group('Create product validator', () => {
-  test('should validate product data', async ({ expect }, userData) => {
-    const validatedData = await createProductValidator.validate(userData)
-    expect(validatedData.name).toBe(userData.name)
+  test('should validate product data', async ({ expect }, productData) => {
+    const validatedData = await createProductValidator.validate(productData)
+    expect(validatedData.name).toBe(productData.name)
     expect(validatedData.amount).toBeInstanceOf(Big)
   }).with([
     {
@@ -74,9 +74,9 @@ test.group('Create product validator', () => {
 })
 
 test.group('Update product validator', () => {
-  test('should validate product data', async ({ expect }, userData) => {
-    const validatedData = await updateProductValidator.validate(userData)
-    if (validatedData?.name) expect(validatedData.name).toBe(userData.name)
+  test('should validate product data', async ({ expect }, productData) => {
+    const validatedData = await updateProductValidator.validate(productData)
+    if (validatedData?.name) expect(validatedData.name).toBe(productData.name)
     if (validatedData?.amount) expect(validatedData.amount).toBeInstanceOf(Big)
   }).with([
     {
