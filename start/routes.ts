@@ -11,6 +11,7 @@ import router from '@adonisjs/core/services/router'
 const UsersController = () => import('#controllers/users_controller')
 const ProductsController = () => import('#controllers/products_controller')
 const PurchasesController = () => import('#controllers/purchases_controller')
+const GatewaysController = () => import('#controllers/gateways_controller')
 
 /**
  * USERS
@@ -32,3 +33,9 @@ router.delete('/products/:id', [ProductsController, 'deleteProduct'])
  * PURCHASES
  */
 router.post('/purchase', [PurchasesController, 'newPurchase'])
+
+/**
+ * GATEWAYS
+ */
+router.put('/gateways/:id/active', [GatewaysController, 'editActive'])
+router.put('/gateways/:id/priority', [GatewaysController, 'editPriority'])

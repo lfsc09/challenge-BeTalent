@@ -1,6 +1,6 @@
 import GatewayModel from '#models/gateway'
 import { DateTime } from 'luxon'
-import { UsableGatewayDTO, GatewayDAO } from '../../../contracts/gateway_dao.js'
+import { UsableGatewayDTO, UpdateGatewayDTO, GatewayDAO } from '../../../contracts/gateway_dao.js'
 
 export class GatewayDAODatabase implements GatewayDAO {
   async getGatewaysToUse(): Promise<UsableGatewayDTO[]> {
@@ -18,6 +18,12 @@ export class GatewayDAODatabase implements GatewayDAO {
   async markGatewayAsUp(gatewayId: string): Promise<void> {
     const gateway = await GatewayModel.find(gatewayId)
     gateway?.merge({ isActive: true, downSince: null })
+    await gateway?.save()
+  }
+
+  async updateGateway(id: string, input: UpdateGatewayDTO): Promise<void> {
+    const gateway = await GatewayModel.findOrFail(id)
+    gateway.merge(input)
     await gateway?.save()
   }
 }
