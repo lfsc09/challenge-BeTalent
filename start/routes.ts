@@ -6,11 +6,11 @@
 | The routes file is used for defining the HTTP routes.
 |
 */
-
-import ProductsController from '#controllers/products_controller'
 import router from '@adonisjs/core/services/router'
 
 const UsersController = () => import('#controllers/users_controller')
+const ProductsController = () => import('#controllers/products_controller')
+const PurchasesController = () => import('#controllers/purchases_controller')
 
 /**
  * USERS
@@ -27,3 +27,8 @@ router.get('/products', [ProductsController, 'allProducts'])
 router.post('/products', [ProductsController, 'newProduct'])
 router.put('/products/:id', [ProductsController, 'editProduct'])
 router.delete('/products/:id', [ProductsController, 'deleteProduct'])
+
+/**
+ * PURCHASES
+ */
+router.post('/purchase', [PurchasesController, 'newPurchase'])
