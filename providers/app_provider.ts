@@ -5,6 +5,7 @@ import { ClientDAO } from '../contracts/client_dao.js'
 import { PurchaseRepository } from '../contracts/purchase_repository.js'
 import { GatewayDAO } from '../contracts/gateway_dao.js'
 import { PaymentFactory } from '../contracts/payment_factory.js'
+import { PurchaseDAO } from '../contracts/purchase_dao.js'
 
 export default class AppProvider {
   constructor(protected app: ApplicationService) {}
@@ -26,6 +27,9 @@ export default class AppProvider {
 
     const { ClientDAODatabase } = await import('#services/dao/client_database')
     this.app.container.bind(ClientDAO, () => this.app.container.make(ClientDAODatabase))
+
+    const { PurchaseDAODatabase } = await import('#services/dao/purchase_database')
+    this.app.container.bind(PurchaseDAO, () => this.app.container.make(PurchaseDAODatabase))
 
     const { PurchaseRepositoryDatabase } = await import('#services/repository/purchase_repository')
     this.app.container.bind(PurchaseRepository, () =>
