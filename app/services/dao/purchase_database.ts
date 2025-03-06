@@ -57,4 +57,8 @@ export class PurchaseDAODatabase implements PurchaseDAO {
       updatedAt: transaction.updated_at,
     }
   }
+
+  async checkExistence(id: string): Promise<string> {
+    return (await TransactionModel.findOrFail(id)).id
+  }
 }

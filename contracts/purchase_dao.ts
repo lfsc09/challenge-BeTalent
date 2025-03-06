@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 export abstract class PurchaseDAO {
   abstract getAllPurchases(): Promise<PurchaseDTO[]>
   abstract getPurchaseDetails(id: string): Promise<DetailsPurchaseDTO>
+  abstract checkExistence(id: string): Promise<string>
 }
 
 export type PurchaseDTO = {
