@@ -1,5 +1,5 @@
 import UserModel from '#models/user'
-import { CreateUserDTO, UpdateUserDTO, UserDAO, UserDTO } from '../../../../contracts/user_dao.js'
+import { CreateUserDTO, UpdateUserDTO, UserDAO, UserDTO } from '../../../contracts/user_dao.js'
 
 export class UserDAODatabase implements UserDAO {
   async getAllUsers(): Promise<UserDTO[]> {
