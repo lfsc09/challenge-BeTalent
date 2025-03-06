@@ -31,7 +31,7 @@ Este teste prático foi desenvolvido com:
 | [`/clients/:id`](#client-details)                   | `GET`    | privada | Detalhes do cliente e todas suas compras                                  |
 | [`/purchases`](#purchases-list-all)                 | `GET`    | privada | Listar todas as compras                                                   |
 | [`/purchases/:id`](#purchase-details)               | `GET`    | privada | Detalhes de uma compra                                                    |
-| `/reimburse`                                        | `POST`   | privada | Realizar reembolso de uma compra junto ao gateway com validação por roles |
+| [`/reimburse`](#reimburse)                          | `POST`   | privada | Realizar reembolso de uma compra junto ao gateway com validação por roles |
 
 </br>
 
@@ -40,7 +40,7 @@ Este teste prático foi desenvolvido com:
 - [x] Criar docker compose configurando as Gateways e o DB.
 - [x] Implementar Controller, Validações, Models, Migration e Testes de usuários.
 - [x] Implementar Controller, Validações, Models, Migration e Testes de produtos.
-- [ ] Implementar Controller, Models, Migration e Testes de clientes.
+- [x] Implementar Controller, Models, Migration e Testes de clientes.
 - [x] Implementar Controller, Models, Migration e Testes de gateways.
 - [x] Implementar Controller, Models, Migration e Testes de transações.
 - [ ] Gerar middleware the autenticação.
@@ -176,6 +176,33 @@ Caso a gateway esteja indisponível haverá no máximo 3 retries até a gateway 
 A escolha das gateways são através da factory `payment_factory.ts`, que le do DB as gateways cadastradas, e baseada na escolhida retorna uma instacia da implementação da gateway. Dessa forma adicionar novas gateways requer apenas criar uma nova implemetação do contrato `payment_gateway.ts`, adicionar essa gateway ao DB e adicionar novas variáveis de ambiente para o `HOST` e `PORT` dela.
 
 _O serviço `process_payment.ts` pode ser chamado a qualquer momento, com a unica restrição de ser passado o id da transação que irá ser processado._
+
+</br>
+
+### reimburse
+
+##### HTTP Request
+
+    Endpoint: /reimburse/:id
+    Method: POST
+
+    Response Codes:
+     - 200: Sucesso
+     - 404: Transação não encontrada
+
+##### Implementação
+
+Da mesma forma que na compra, o reembolso também é dividido em 2 serviços.
+
+No primeiro, de forma sincrona com a request, o serviço `reimburse_purchase.ts` captura do ID da compra e verifica se é existente apenas para retornar `404` caso não exista.
+
+O fim do primeiro serviço retorna ou `200` se a compra existe ou `404` se não existe.
+
+No segundo serviço `process_reimbursement.ts`, é restaurado os dados da transação, escolhido a gateway especifica em que a compra foi realizada e conecta a ela fazendo o reembolso com o `externalID` da transação.
+
+Caso a gateway esteja indisponivel haverá tambem no máximo 3 retries até a gateway ser marcada como indisponível. Os retries são inalteráveis e seguem um backoff linear. A indisponibilidade da Gateway pode ser automaticamente revertida por tempo configurado pelas variáveis de ambiente `AUTO_RECOVER_GATEWAY_IN_MINUTES=2` e `AUTO_RECOVER_GATEWAY=true`. **(Por padrão as gateways se auto recuperam)**
+
+_O serviço `process_reimbursement.ts` pode ser chamado a qualquer momento, com a unica restrição de ser passado o id da transação que irá ser processado._
 
 </br>
 
