@@ -28,9 +28,9 @@ Este teste prático foi desenvolvido com:
 | [`/products/:id`](#products-edit)                   | `PUT`    | privada | Editar um produto                                                         |
 | [`/products/:id`](#products-delete)                 | `DELETE` | privada | Apagar um produto                                                         |
 | `/clients`                                          | `GET`    | privada | Listar todos os clientes                                                  |
-| `/clients/:id?`                                     | `GET`    | privada | Detalhes do cliente e todas suas compras                                  |
-| `/purchases`                                        | `GET`    | privada | Listar todas as compras                                                   |
-| `/purchases/:id?`                                   | `GET`    | privada | Detalhes de uma compra                                                    |
+| `/clients/:id`                                      | `GET`    | privada | Detalhes do cliente e todas suas compras                                  |
+| [`/purchases`](#purchases-list-all)                 | `GET`    | privada | Listar todas as compras                                                   |
+| [`/purchases/:id`](#purchase-details)               | `GET`    | privada | Detalhes de uma compra                                                    |
 | `/reimburse`                                        | `POST`   | privada | Realizar reembolso de uma compra junto ao gateway com validação por roles |
 
 </br>
@@ -42,7 +42,7 @@ Este teste prático foi desenvolvido com:
 - [x] Implementar Controller, Validações, Models, Migration e Testes de produtos.
 - [ ] Implementar Controller, Models, Migration e Testes de clientes.
 - [x] Implementar Controller, Models, Migration e Testes de gateways.
-- [ ] Implementar Controller, Models, Migration e Testes de transações.
+- [x] Implementar Controller, Models, Migration e Testes de transações.
 - [ ] Gerar middleware the autenticação.
 - [ ] Gerar middleware de autorização para as roles.
 
@@ -390,6 +390,69 @@ _O serviço `process_payment.ts` pode ser chamado a qualquer momento, com a unic
     Response Codes:
      - 200: Sucesso
      - 404: Produto não encontrado
+
+</br>
+
+### purchases list all
+
+##### HTTP Request
+
+    Endpoint: /purchases
+    Method: GET
+
+    Response Codes:
+     - 200: Sucesso
+
+##### Response Payload (Exemplo)
+
+```json
+[
+  {
+    "id": "ae17635e-b683-4e35-aaae-396e2c29d723",
+    "status": "created",
+    "amount": 10.5,
+    "createdAt": "2025-03-06T06:17:19.000+00:00",
+    "updatedAt": "2025-03-06T06:17:19.000+00:00"
+  }
+]
+```
+
+</br>
+
+### purchase details
+
+##### HTTP Request
+
+    Endpoint: /purchases/:id
+    Method: GET
+
+    Response Codes:
+     - 200: Sucesso
+     - 404: Compra não encontrada
+
+##### Response Payload (Exemplo)
+
+```json
+[
+  {
+    "id": "ae17635e-b683-4e35-aaae-396e2c29d723",
+    "clientName": "Cliente",
+    "clientEmail": "client@adonis.com",
+    "gatewayName": "Gateway 1",
+    "externalId": "ae17635e-b683-4e35-aaae-122e2c29d723",
+    "status": "approved",
+    "amount": 10.5,
+    "products": [
+      {
+        "name": "Produto 1",
+        "quantity": 5
+      }
+    ],
+    "createdAt": "2025-03-06T06:17:19.000+00:00",
+    "updatedAt": "2025-03-06T06:17:19.000+00:00"
+  }
+]
+```
 
 </br>
 
