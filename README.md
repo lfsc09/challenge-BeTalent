@@ -13,25 +13,25 @@ Este teste prático foi desenvolvido com:
 
 ### Rotas
 
-| Rota                                | Método   | Tipo    | Descrição                                                                 |
-| ----------------------------------- | -------- | ------- | ------------------------------------------------------------------------- |
-| `/login`                            | `POST`   | pública | Realizar o login _(Para rotas administrativas)_                           |
-| [`/purchase`](#purchase)            | `POST`   | pública | Realizar uma compra de um cliente informando produtos                     |
-| `/gateway/active`                   | `POST`   | privada | Ativar/desativar um gateway                                               |
-| `/gateway/priority`                 | `POST`   | privada | Alterar a prioridade de um gateway                                        |
-| [`/users`](#users-list)             | `GET`    | privada | Listar todos os usuários                                                  |
-| [`/users`](#users-new)              | `POST`   | privada | Criar um usuário                                                          |
-| [`/users/:id`](#users-edit)         | `PUT`    | privada | Editar um usuário                                                         |
-| [`/users/:id`](#users-delete)       | `DELETE` | privada | Apagar um usuário                                                         |
-| [`/products`](#products-list)       | `GET`    | privada | Listar todos os produtos                                                  |
-| [`/products`](#products-new)        | `POST`   | privada | Criar um produto                                                          |
-| [`/products/:id`](#products-edit)   | `PUT`    | privada | Editar um produto                                                         |
-| [`/products/:id`](#products-delete) | `DELETE` | privada | Apagar um produto                                                         |
-| `/clients`                          | `GET`    | privada | Listar todos os clientes                                                  |
-| `/clients/:id?`                     | `GET`    | privada | Detalhes do cliente e todas suas compras                                  |
-| `/purchases`                        | `GET`    | privada | Listar todas as compras                                                   |
-| `/purchases/:id?`                   | `GET`    | privada | Detalhes de uma compra                                                    |
-| `/reimburse`                        | `POST`   | privada | Realizar reembolso de uma compra junto ao gateway com validação por roles |
+| Rota                                                | Método   | Tipo    | Descrição                                                                 |
+| --------------------------------------------------- | -------- | ------- | ------------------------------------------------------------------------- |
+| `/login`                                            | `POST`   | pública | Realizar o login _(Para rotas administrativas)_                           |
+| [`/purchase`](#purchase)                            | `POST`   | pública | Realizar uma compra de um cliente informando produtos                     |
+| [`/gateways/:id/active`](#gateways-active-edit)     | `PUT`    | privada | Ativar/desativar um gateway                                               |
+| [`/gateways/:id/priority`](#gateways-priority-edit) | `PUT`    | privada | Alterar a prioridade de um gateway                                        |
+| [`/users`](#users-list)                             | `GET`    | privada | Listar todos os usuários                                                  |
+| [`/users`](#users-new)                              | `POST`   | privada | Criar um usuário                                                          |
+| [`/users/:id`](#users-edit)                         | `PUT`    | privada | Editar um usuário                                                         |
+| [`/users/:id`](#users-delete)                       | `DELETE` | privada | Apagar um usuário                                                         |
+| [`/products`](#products-list)                       | `GET`    | privada | Listar todos os produtos                                                  |
+| [`/products`](#products-new)                        | `POST`   | privada | Criar um produto                                                          |
+| [`/products/:id`](#products-edit)                   | `PUT`    | privada | Editar um produto                                                         |
+| [`/products/:id`](#products-delete)                 | `DELETE` | privada | Apagar um produto                                                         |
+| `/clients`                                          | `GET`    | privada | Listar todos os clientes                                                  |
+| `/clients/:id?`                                     | `GET`    | privada | Detalhes do cliente e todas suas compras                                  |
+| `/purchases`                                        | `GET`    | privada | Listar todas as compras                                                   |
+| `/purchases/:id?`                                   | `GET`    | privada | Detalhes de uma compra                                                    |
+| `/reimburse`                                        | `POST`   | privada | Realizar reembolso de uma compra junto ao gateway com validação por roles |
 
 </br>
 
@@ -41,7 +41,7 @@ Este teste prático foi desenvolvido com:
 - [x] Implementar Controller, Validações, Models, Migration e Testes de usuários.
 - [x] Implementar Controller, Validações, Models, Migration e Testes de produtos.
 - [ ] Implementar Controller, Models, Migration e Testes de clientes.
-- [ ] Implementar Controller, Models, Migration e Testes de gateways.
+- [x] Implementar Controller, Models, Migration e Testes de gateways.
 - [ ] Implementar Controller, Models, Migration e Testes de transações.
 - [ ] Gerar middleware the autenticação.
 - [ ] Gerar middleware de autorização para as roles.
@@ -176,6 +176,50 @@ Caso a gateway esteja indisponível haverá no máximo 3 retries até a gateway 
 A escolha das gateways são através da factory `payment_factory.ts`, que le do DB as gateways cadastradas, e baseada na escolhida retorna uma instacia da implementação da gateway. Dessa forma adicionar novas gateways requer apenas criar uma nova implemetação do contrato `payment_gateway.ts`, adicionar essa gateway ao DB e adicionar novas variáveis de ambiente para o `HOST` e `PORT` dela.
 
 _O serviço `process_payment.ts` pode ser chamado a qualquer momento, com a unica restrição de ser passado o id da transação que irá ser processado._
+
+</br>
+
+### gateways active edit
+
+##### HTTP Request
+
+    Endpoint: /gateways/:id/active
+    Method: PUT
+
+    Response Codes:
+     - 200: Sucesso
+     - 404: Gateway não encontrado
+     - 422: Payload passada inválida
+
+##### Request Payload (Exemplo)
+
+```json
+{
+  "isActive": true
+}
+```
+
+</br>
+
+### gateways priority edit
+
+##### HTTP Request
+
+    Endpoint: /gateways/:id/priority
+    Method: PUT
+
+    Response Codes:
+     - 200: Sucesso
+     - 404: Gateway não encontrado
+     - 422: Payload passada inválida
+
+##### Request Payload (Exemplo)
+
+```json
+{
+  "priority": 4
+}
+```
 
 </br>
 
