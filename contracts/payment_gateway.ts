@@ -9,6 +9,6 @@ export abstract class PaymentGateway {
     cardNumbers: string,
     cardCvv: string
   ): Promise<string>
-  abstract reimburse(): Promise<string>
+  abstract reimburse(id: string): Promise<void>
   abstract getId(): string
 }

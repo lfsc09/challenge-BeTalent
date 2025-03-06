@@ -54,8 +54,26 @@ export class PaymentGateway2 implements PaymentGateway {
     }
   }
 
-  async reimburse(): Promise<string> {
-    throw new Error('Method not implemented.')
+  async reimburse(id: string): Promise<void> {
+    try {
+      const input: TransactionReimburseData = {
+        id,
+      }
+
+      const response = await fetch(`http://${this.host}:${this.port}/transacoes/reembolso`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+          'Gateway-Auth-Token': this.authToken.token,
+          'Gateway-Auth-Secret': this.authToken.secret,
+        },
+        body: JSON.stringify(input),
+      })
+
+      if (!response.ok) throw new Error('Invalid ID provided')
+    } catch (error) {
+      throw new Error(`${this.constructor.name}: ${error.message}`)
+    }
   }
 
   getId(): string {
@@ -80,4 +98,8 @@ interface TransactionChargeData {
   email: string
   numeroCartao: string
   cvv: string
+}
+
+interface TransactionReimburseData {
+  id: string
 }

@@ -52,8 +52,25 @@ export class PaymentGateway1 implements PaymentGateway {
     }
   }
 
-  async reimburse(): Promise<string> {
-    throw new Error('Method not implemented.')
+  async reimburse(id: string): Promise<void> {
+    try {
+      if (!this.authToken) await this.authenticate()
+
+      const response = await fetch(
+        `http://${this.host}:${this.port}/transactions/${id}/charge_back`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Authorization': `Bearer ${this.authToken}`,
+          },
+        }
+      )
+
+      if (!response.ok) throw new Error('Invalid ID provided')
+    } catch (error) {
+      throw new Error(`${this.constructor.name}: ${error.message}`)
+    }
   }
 
   getId(): string {
@@ -67,7 +84,7 @@ export class PaymentGateway1 implements PaymentGateway {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: 'dev@betalent.tecsh',
+        email: 'dev@betalent.tech',
         token: 'FEC9BB078BF338F464F96B48089EB498',
       }),
     })
