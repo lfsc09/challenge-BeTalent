@@ -27,5 +27,21 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_PORT: Env.schema.number(),
   DB_USER: Env.schema.string(),
   DB_PASSWORD: Env.schema.string.optional(),
-  DB_DATABASE: Env.schema.string()
+  DB_DATABASE: Env.schema.string(),
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring gateway connection
+  |----------------------------------------------------------
+  */
+  GATEWAY1_HOST: Env.schema.string({ format: 'host' }),
+  GATEWAY1_PORT: Env.schema.string(),
+  GATEWAY2_HOST: Env.schema.string({ format: 'host' }),
+  GATEWAY2_PORT: Env.schema.string(),
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring gateways auto recovery
+  |----------------------------------------------------------
+  */
+  AUTO_RECOVER_GATEWAY: Env.schema.boolean.optional(),
+  AUTO_RECOVER_GATEWAY_IN_MINUTES: Env.schema.number.optional(),
 })
