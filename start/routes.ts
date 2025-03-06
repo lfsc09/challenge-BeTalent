@@ -36,6 +36,7 @@ router.delete('/products/:id', [ProductsController, 'deleteProduct'])
 router.post('/purchase', [PurchasesController, 'newPurchase'])
 router.get('/purchases', [PurchasesController, 'allPurchases'])
 router.get('/purchases/:id', [PurchasesController, 'purchaseDetails'])
+router.post('/reimburse/:id', [PurchasesController, 'reimburse'])
 
 /**
  * GATEWAYS
