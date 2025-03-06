@@ -18,7 +18,13 @@ export type ClientDetailsDTO = {
   id: string
   name: string
   email: string
-  purchases: any[]
+  purchases: {
+    id: string
+    status: string
+    amount: string
+    createdAt: DateTime
+    updatedAt: DateTime
+  }[]
 }
 
 export type CreateClientDTO = {

@@ -13,25 +13,25 @@ Este teste prático foi desenvolvido com:
 
 ### Rotas
 
-| Rota                                | Método   | Tipo    | Descrição                                                                 |
-| ----------------------------------- | -------- | ------- | ------------------------------------------------------------------------- |
-| `/login`                            | `POST`   | pública | Realizar o login _(Para rotas administrativas)_                           |
-| [`/purchase`](#purchase)            | `POST`   | pública | Realizar uma compra de um cliente informando produtos                     |
-| `/gateway/active`                   | `POST`   | privada | Ativar/desativar um gateway                                               |
-| `/gateway/priority`                 | `POST`   | privada | Alterar a prioridade de um gateway                                        |
-| [`/users`](#users-list)             | `GET`    | privada | Listar todos os usuários                                                  |
-| [`/users`](#users-new)              | `POST`   | privada | Criar um usuário                                                          |
-| [`/users/:id`](#users-edit)         | `PUT`    | privada | Editar um usuário                                                         |
-| [`/users/:id`](#users-delete)       | `DELETE` | privada | Apagar um usuário                                                         |
-| [`/products`](#products-list)       | `GET`    | privada | Listar todos os produtos                                                  |
-| [`/products`](#products-new)        | `POST`   | privada | Criar um produto                                                          |
-| [`/products/:id`](#products-edit)   | `PUT`    | privada | Editar um produto                                                         |
-| [`/products/:id`](#products-delete) | `DELETE` | privada | Apagar um produto                                                         |
-| `/clients`                          | `GET`    | privada | Listar todos os clientes                                                  |
-| `/clients/:id?`                     | `GET`    | privada | Detalhes do cliente e todas suas compras                                  |
-| `/purchases`                        | `GET`    | privada | Listar todas as compras                                                   |
-| `/purchases/:id?`                   | `GET`    | privada | Detalhes de uma compra                                                    |
-| `/reimburse`                        | `POST`   | privada | Realizar reembolso de uma compra junto ao gateway com validação por roles |
+| Rota                                                | Método   | Tipo    | Descrição                                                                 |
+| --------------------------------------------------- | -------- | ------- | ------------------------------------------------------------------------- |
+| `/login`                                            | `POST`   | pública | Realizar o login _(Para rotas administrativas)_                           |
+| [`/purchase`](#purchase)                            | `POST`   | pública | Realizar uma compra de um cliente informando produtos                     |
+| [`/gateways/:id/active`](#gateways-active-edit)     | `PUT`    | privada | Ativar/desativar um gateway                                               |
+| [`/gateways/:id/priority`](#gateways-priority-edit) | `PUT`    | privada | Alterar a prioridade de um gateway                                        |
+| [`/users`](#users-list)                             | `GET`    | privada | Listar todos os usuários                                                  |
+| [`/users`](#users-new)                              | `POST`   | privada | Criar um usuário                                                          |
+| [`/users/:id`](#users-edit)                         | `PUT`    | privada | Editar um usuário                                                         |
+| [`/users/:id`](#users-delete)                       | `DELETE` | privada | Apagar um usuário                                                         |
+| [`/products`](#products-list)                       | `GET`    | privada | Listar todos os produtos                                                  |
+| [`/products`](#products-new)                        | `POST`   | privada | Criar um produto                                                          |
+| [`/products/:id`](#products-edit)                   | `PUT`    | privada | Editar um produto                                                         |
+| [`/products/:id`](#products-delete)                 | `DELETE` | privada | Apagar um produto                                                         |
+| [`/clients`](#clients-list-all)                     | `GET`    | privada | Listar todos os clientes                                                  |
+| [`/clients/:id`](#client-details)                   | `GET`    | privada | Detalhes do cliente e todas suas compras                                  |
+| [`/purchases`](#purchases-list-all)                 | `GET`    | privada | Listar todas as compras                                                   |
+| [`/purchases/:id`](#purchase-details)               | `GET`    | privada | Detalhes de uma compra                                                    |
+| [`/reimburse`](#reimburse)                          | `POST`   | privada | Realizar reembolso de uma compra junto ao gateway com validação por roles |
 
 </br>
 
@@ -40,9 +40,9 @@ Este teste prático foi desenvolvido com:
 - [x] Criar docker compose configurando as Gateways e o DB.
 - [x] Implementar Controller, Validações, Models, Migration e Testes de usuários.
 - [x] Implementar Controller, Validações, Models, Migration e Testes de produtos.
-- [ ] Implementar Controller, Models, Migration e Testes de clientes.
-- [ ] Implementar Controller, Models, Migration e Testes de gateways.
-- [ ] Implementar Controller, Models, Migration e Testes de transações.
+- [x] Implementar Controller, Models, Migration e Testes de clientes.
+- [x] Implementar Controller, Models, Migration e Testes de gateways.
+- [x] Implementar Controller, Models, Migration e Testes de transações.
 - [ ] Gerar middleware the autenticação.
 - [ ] Gerar middleware de autorização para as roles.
 
@@ -176,6 +176,77 @@ Caso a gateway esteja indisponível haverá no máximo 3 retries até a gateway 
 A escolha das gateways são através da factory `payment_factory.ts`, que le do DB as gateways cadastradas, e baseada na escolhida retorna uma instacia da implementação da gateway. Dessa forma adicionar novas gateways requer apenas criar uma nova implemetação do contrato `payment_gateway.ts`, adicionar essa gateway ao DB e adicionar novas variáveis de ambiente para o `HOST` e `PORT` dela.
 
 _O serviço `process_payment.ts` pode ser chamado a qualquer momento, com a unica restrição de ser passado o id da transação que irá ser processado._
+
+</br>
+
+### reimburse
+
+##### HTTP Request
+
+    Endpoint: /reimburse/:id
+    Method: POST
+
+    Response Codes:
+     - 200: Sucesso
+     - 404: Transação não encontrada
+
+##### Implementação
+
+Da mesma forma que na compra, o reembolso também é dividido em 2 serviços.
+
+No primeiro, de forma sincrona com a request, o serviço `reimburse_purchase.ts` captura do ID da compra e verifica se é existente apenas para retornar `404` caso não exista.
+
+O fim do primeiro serviço retorna ou `200` se a compra existe ou `404` se não existe.
+
+No segundo serviço `process_reimbursement.ts`, é restaurado os dados da transação, escolhido a gateway especifica em que a compra foi realizada e conecta a ela fazendo o reembolso com o `externalID` da transação.
+
+Caso a gateway esteja indisponivel haverá tambem no máximo 3 retries até a gateway ser marcada como indisponível. Os retries são inalteráveis e seguem um backoff linear. A indisponibilidade da Gateway pode ser automaticamente revertida por tempo configurado pelas variáveis de ambiente `AUTO_RECOVER_GATEWAY_IN_MINUTES=2` e `AUTO_RECOVER_GATEWAY=true`. **(Por padrão as gateways se auto recuperam)**
+
+_O serviço `process_reimbursement.ts` pode ser chamado a qualquer momento, com a unica restrição de ser passado o id da transação que irá ser processado._
+
+</br>
+
+### gateways active edit
+
+##### HTTP Request
+
+    Endpoint: /gateways/:id/active
+    Method: PUT
+
+    Response Codes:
+     - 200: Sucesso
+     - 404: Gateway não encontrado
+     - 422: Payload passada inválida
+
+##### Request Payload (Exemplo)
+
+```json
+{
+  "isActive": true
+}
+```
+
+</br>
+
+### gateways priority edit
+
+##### HTTP Request
+
+    Endpoint: /gateways/:id/priority
+    Method: PUT
+
+    Response Codes:
+     - 200: Sucesso
+     - 404: Gateway não encontrado
+     - 422: Payload passada inválida
+
+##### Request Payload (Exemplo)
+
+```json
+{
+  "priority": 4
+}
+```
 
 </br>
 
@@ -346,6 +417,129 @@ _O serviço `process_payment.ts` pode ser chamado a qualquer momento, com a unic
     Response Codes:
      - 200: Sucesso
      - 404: Produto não encontrado
+
+</br>
+
+### clients list all
+
+##### HTTP Request
+
+    Endpoint: /clients
+    Method: GET
+
+    Response Codes:
+     - 200: Sucesso
+
+##### Response Payload (Exemplo)
+
+```json
+[
+  {
+    "id": "ae17635e-b683-4e35-aaae-396e2c29d723",
+    "name": "Client",
+    "email": "client@adonis.com",
+    "createdAt": "2025-03-06T06:17:19.000+00:00",
+    "updatedAt": "2025-03-06T06:17:19.000+00:00"
+  }
+]
+```
+
+</br>
+
+### client details
+
+##### HTTP Request
+
+    Endpoint: /clients/:id
+    Method: GET
+
+    Response Codes:
+     - 200: Sucesso
+     - 404: Cliente não encontrado
+
+##### Response Payload (Exemplo)
+
+```json
+[
+  {
+    "id": "ae17635e-b683-4e35-aaae-396e2c29d723",
+    "name": "Cliente",
+    "email": "client@adonis.com",
+    "purchases": [
+      {
+        "id": "ae17635e-b683-4e35-aaae-396e2c29d723",
+        "status": "created",
+        "amount": 10.5,
+        "createdAt": "2025-03-06T06:17:19.000+00:00",
+        "updatedAt": "2025-03-06T06:17:19.000+00:00"
+      }
+    ]
+  }
+]
+```
+
+</br>
+
+### purchases list all
+
+##### HTTP Request
+
+    Endpoint: /purchases
+    Method: GET
+
+    Response Codes:
+     - 200: Sucesso
+
+##### Response Payload (Exemplo)
+
+```json
+[
+  {
+    "id": "ae17635e-b683-4e35-aaae-396e2c29d723",
+    "status": "created",
+    "amount": 10.5,
+    "createdAt": "2025-03-06T06:17:19.000+00:00",
+    "updatedAt": "2025-03-06T06:17:19.000+00:00"
+  }
+]
+```
+
+</br>
+
+### purchase details
+
+##### HTTP Request
+
+    Endpoint: /purchases/:id
+    Method: GET
+
+    Response Codes:
+     - 200: Sucesso
+     - 404: Compra não encontrada
+
+##### Response Payload (Exemplo)
+
+```json
+[
+  {
+    "id": "ae17635e-b683-4e35-aaae-396e2c29d723",
+    "clientName": "Cliente",
+    "clientEmail": "client@adonis.com",
+    "gatewayName": "Gateway 1",
+    "externalId": "ae17635e-b683-4e35-aaae-122e2c29d723",
+    "status": "approved",
+    "amount": 10.5,
+    "products": [
+      {
+        "name": "Produto 1",
+        "quantity": 5
+      }
+    ],
+    "createdAt": "2025-03-06T06:17:19.000+00:00",
+    "updatedAt": "2025-03-06T06:17:19.000+00:00"
+  }
+]
+```
 
 </br>
 

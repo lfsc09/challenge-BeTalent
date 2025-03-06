@@ -132,6 +132,19 @@ export default class Transaction {
     return true
   }
 
+  reimbursePayment(): boolean {
+    if (this.status === TransactionStatus.REFUNDED) return false
+    if (this.status !== TransactionStatus.APPROVED)
+      throw new Error('Transaction must be in "APPROVED" status to reimburse payment')
+    this.status = TransactionStatus.REFUNDED
+    this.updatedAt = DateTime.now()
+    return true
+  }
+
+  isApproved(): boolean {
+    return this.status === TransactionStatus.APPROVED
+  }
+
   getId(): string {
     return this.id
   }
