@@ -12,6 +12,7 @@ const UsersController = () => import('#controllers/users_controller')
 const ProductsController = () => import('#controllers/products_controller')
 const PurchasesController = () => import('#controllers/purchases_controller')
 const GatewaysController = () => import('#controllers/gateways_controller')
+const ClientsController = () => import('#controllers/clients_controller')
 
 /**
  * USERS
@@ -41,3 +42,9 @@ router.get('/purchases/:id', [PurchasesController, 'purchaseDetails'])
  */
 router.put('/gateways/:id/active', [GatewaysController, 'editActive'])
 router.put('/gateways/:id/priority', [GatewaysController, 'editPriority'])
+
+/**
+ * CLIENTS
+ */
+router.get('/clients', [ClientsController, 'allClients'])
+router.get('/clients/:id', [ClientsController, 'clientDetails'])
