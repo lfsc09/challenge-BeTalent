@@ -27,8 +27,8 @@ Este teste prático foi desenvolvido com:
 | [`/products`](#products-new)                        | `POST`   | privada | Criar um produto                                                          |
 | [`/products/:id`](#products-edit)                   | `PUT`    | privada | Editar um produto                                                         |
 | [`/products/:id`](#products-delete)                 | `DELETE` | privada | Apagar um produto                                                         |
-| `/clients`                                          | `GET`    | privada | Listar todos os clientes                                                  |
-| `/clients/:id`                                      | `GET`    | privada | Detalhes do cliente e todas suas compras                                  |
+| [`/clients`](#clients-list-all)                     | `GET`    | privada | Listar todos os clientes                                                  |
+| [`/clients/:id`](#client-details)                   | `GET`    | privada | Detalhes do cliente e todas suas compras                                  |
 | [`/purchases`](#purchases-list-all)                 | `GET`    | privada | Listar todas as compras                                                   |
 | [`/purchases/:id`](#purchase-details)               | `GET`    | privada | Detalhes de uma compra                                                    |
 | `/reimburse`                                        | `POST`   | privada | Realizar reembolso de uma compra junto ao gateway com validação por roles |
@@ -390,6 +390,66 @@ _O serviço `process_payment.ts` pode ser chamado a qualquer momento, com a unic
     Response Codes:
      - 200: Sucesso
      - 404: Produto não encontrado
+
+</br>
+
+### clients list all
+
+##### HTTP Request
+
+    Endpoint: /clients
+    Method: GET
+
+    Response Codes:
+     - 200: Sucesso
+
+##### Response Payload (Exemplo)
+
+```json
+[
+  {
+    "id": "ae17635e-b683-4e35-aaae-396e2c29d723",
+    "name": "Client",
+    "email": "client@adonis.com",
+    "createdAt": "2025-03-06T06:17:19.000+00:00",
+    "updatedAt": "2025-03-06T06:17:19.000+00:00"
+  }
+]
+```
+
+</br>
+
+### client details
+
+##### HTTP Request
+
+    Endpoint: /clients/:id
+    Method: GET
+
+    Response Codes:
+     - 200: Sucesso
+     - 404: Cliente não encontrado
+
+##### Response Payload (Exemplo)
+
+```json
+[
+  {
+    "id": "ae17635e-b683-4e35-aaae-396e2c29d723",
+    "name": "Cliente",
+    "email": "client@adonis.com",
+    "purchases": [
+      {
+        "id": "ae17635e-b683-4e35-aaae-396e2c29d723",
+        "status": "created",
+        "amount": 10.5,
+        "createdAt": "2025-03-06T06:17:19.000+00:00",
+        "updatedAt": "2025-03-06T06:17:19.000+00:00"
+      }
+    ]
+  }
+]
+```
 
 </br>
 
