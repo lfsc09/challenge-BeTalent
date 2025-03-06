@@ -3,6 +3,13 @@ import { DateTime } from 'luxon'
 import { UsableGatewayDTO, UpdateGatewayDTO, GatewayDAO } from '../../../contracts/gateway_dao.js'
 
 export class GatewayDAODatabase implements GatewayDAO {
+  async getGatewayUsed(gatewayId: string): Promise<UsableGatewayDTO | null> {
+    return await GatewayModel.query()
+      .where('id', gatewayId)
+      .select('id', 'isActive', 'gatewayModule', 'downSince')
+      .first()
+  }
+
   async getGatewaysToUse(): Promise<UsableGatewayDTO[]> {
     return await GatewayModel.query()
       .select('id', 'isActive', 'gatewayModule', 'downSince')
