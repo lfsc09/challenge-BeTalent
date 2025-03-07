@@ -7,6 +7,7 @@
 |
 */
 import router from '@adonisjs/core/services/router'
+import { middleware } from './kernel.js'
 
 const UsersController = () => import('#controllers/users_controller')
 const ProductsController = () => import('#controllers/products_controller')
@@ -15,37 +16,69 @@ const GatewaysController = () => import('#controllers/gateways_controller')
 const ClientsController = () => import('#controllers/clients_controller')
 
 /**
+ * LOGIN
+ */
+router.post('/login', [UsersController, 'login'])
+
+/**
  * USERS
  */
-router.get('/users', [UsersController, 'allUsers'])
-router.post('/users', [UsersController, 'newUser'])
-router.put('/users/:id', [UsersController, 'editUser'])
-router.delete('/users/:id', [UsersController, 'deleteUser'])
+router
+  .group(() => {
+    router.get('', [UsersController, 'allUsers'])
+    router.post('', [UsersController, 'newUser'])
+    router.put(':id', [UsersController, 'editUser'])
+    router.delete(':id', [UsersController, 'deleteUser'])
+  })
+  .prefix('/users')
+  .use(middleware.auth())
 
 /**
  * PRODUCTS
  */
-router.get('/products', [ProductsController, 'allProducts'])
-router.post('/products', [ProductsController, 'newProduct'])
-router.put('/products/:id', [ProductsController, 'editProduct'])
-router.delete('/products/:id', [ProductsController, 'deleteProduct'])
+router
+  .group(() => {
+    router.get('', [ProductsController, 'allProducts'])
+    router.post('', [ProductsController, 'newProduct'])
+    router.put(':id', [ProductsController, 'editProduct'])
+    router.delete(':id', [ProductsController, 'deleteProduct'])
+  })
+  .prefix('/products')
+  .use(middleware.auth())
 
 /**
  * PURCHASES
  */
 router.post('/purchase', [PurchasesController, 'newPurchase'])
-router.get('/purchases', [PurchasesController, 'allPurchases'])
-router.get('/purchases/:id', [PurchasesController, 'purchaseDetails'])
-router.post('/reimburse/:id', [PurchasesController, 'reimburse'])
+
+router
+  .group(() => {
+    router.get('', [PurchasesController, 'allPurchases'])
+    router.get('/:id', [PurchasesController, 'purchaseDetails'])
+  })
+  .prefix('/purchases')
+  .use(middleware.auth())
+
+router.post('/reimburse/:id', [PurchasesController, 'reimburse']).use(middleware.auth())
 
 /**
  * GATEWAYS
  */
-router.put('/gateways/:id/active', [GatewaysController, 'editActive'])
-router.put('/gateways/:id/priority', [GatewaysController, 'editPriority'])
+router
+  .group(() => {
+    router.put(':id/active', [GatewaysController, 'editActive'])
+    router.put(':id/priority', [GatewaysController, 'editPriority'])
+  })
+  .prefix('/gateways')
+  .use(middleware.auth())
 
 /**
  * CLIENTS
  */
-router.get('/clients', [ClientsController, 'allClients'])
-router.get('/clients/:id', [ClientsController, 'clientDetails'])
+router
+  .group(() => {
+    router.get('', [ClientsController, 'allClients'])
+    router.get(':id', [ClientsController, 'clientDetails'])
+  })
+  .prefix('/clients')
+  .use(middleware.auth())
