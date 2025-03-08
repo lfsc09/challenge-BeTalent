@@ -16,19 +16,33 @@ services:
   db:
     image: mysql:latest
     container_name: betalent-db
+    restart: unless-stopped
     ports:
       - '3306:3306'
     environment:
       MYSQL_ROOT_PASSWORD: betalent
       MYSQL_DATABASE: betalent
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - backend
 
   adonis:
     build:
       context: ./
       dockerfile: Dockerfile
     container_name: betalent-adonis
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - '8080:8080'
+    networks:
+      - backend
     profiles:
       - production
 
