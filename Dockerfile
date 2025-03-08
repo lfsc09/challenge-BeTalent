@@ -3,13 +3,13 @@ FROM node:lts-alpine3.21 AS base
 # All deps stage
 FROM base AS deps
 WORKDIR /app
-ADD ../package.json ../package-lock.json ./
+ADD package.json package-lock.json ./
 RUN npm ci
 
 # Production only deps stage
 FROM base AS production-deps
 WORKDIR /app
-ADD ../package.json ../package-lock.json ./
+ADD package.json package-lock.json ./
 RUN npm ci --omit=dev
 
 # Build stage
@@ -25,5 +25,6 @@ ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=production-deps /app/node_modules /app/node_modules
 COPY --from=build /app/build /app
+COPY --from=build /app/.env.production /app/.env
 EXPOSE 8080
-CMD ["node", "./bin/server.js"]
+CMD node ace migration:fresh --seed --force && node ./bin/server.js
