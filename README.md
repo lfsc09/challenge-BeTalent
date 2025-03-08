@@ -50,7 +50,7 @@ Este teste prático foi desenvolvido com:
 
 ## Rodando o projeto
 
-_Acesse o projeto em `127.0.0.1` se estiver usando WSL2._
+_Use o HOST `127.0.0.1` se estiver usando WSL2._
 
 ### Testes
 
@@ -59,11 +59,11 @@ _Acesse o projeto em `127.0.0.1` se estiver usando WSL2._
 _Container das Gateways não é utilizado nos testes, a conexão com elas é substituída._
 
 ```bash
-docker compose -f ./docker/compose.yaml up --build --detach
+docker compose up --build --detach
 ```
 
 ```bash
-docker compose -f ./docker/compose.yaml down
+docker compose down
 ```
 
 #### 2. Rodar a Migration & Seeds (Manualmente)
@@ -86,12 +86,16 @@ npm run test
 
 #### 1. Iniciar os Mocks das Gateways e do Banco de Dados
 
+Gateway 1: [http://localhost:3001](http://localhost:3001)
+Gateway 2: [http://localhost:3002](http://localhost:3002)
+Banco de Dados: [http://localhost:3306](http://localhost:3306)
+
 ```bash
-docker compose -f ./docker/compose.yaml up --build --detach
+docker compose up --build --detach
 ```
 
 ```bash
-docker compose -f ./docker/compose.yaml down
+docker compose down
 ```
 
 #### 2. Rodar a Migration & Seeds (Manualmente)
@@ -104,6 +108,8 @@ npm run migrations:fresh
 
 _Rode as Migrations antes._
 
+O projeto rodará em [http://localhost:3333](http://localhost:3333)
+
 ```bash
 npm run dev
 ```
@@ -114,12 +120,17 @@ npm run dev
 
 Rodar o projeto fazendo build.
 
+O projeto rodará em [http://localhost:8080](http://localhost:8080)
+Gateway 1: [http://localhost:3001](http://localhost:3001)
+Gateway 2: [http://localhost:3002](http://localhost:3002)
+Banco de Dados: [http://localhost:3306](http://localhost:3306)
+
 ```bash
-docker compose -f ./docker/compose.yaml --profile production up --build --detach
+docker compose --profile production up --build --detach
 ```
 
 ```bash
-docker compose -f ./docker/compose.yaml --profile production down
+docker compose --profile production down
 ```
 
 </br>
