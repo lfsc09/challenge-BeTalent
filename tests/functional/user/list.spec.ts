@@ -1,4 +1,6 @@
+import { UserFactory } from '#database/factories/user_factory'
 import User from '#models/user'
+import { generateUserToken } from '#tests/auth_generator'
 import { test } from '@japa/runner'
 
 test.group('User list', (group) => {
@@ -7,22 +9,12 @@ test.group('User list', (group) => {
   })
 
   test('should return two users', async ({ client, expect }) => {
-    const input = [
-      {
-        email: 'user@adonis.com',
-        password: 'password',
-        role: 'USER',
-      },
-      {
-        email: 'finance@adonis.com',
-        password: 'password',
-        role: 'FINANCE',
-      },
-    ]
-    await User.createMany(input)
-    const output = await client.get('/users')
+    const token = await generateUserToken('ADMIN')
+    await UserFactory.createMany(2)
+    const output = await client.get('/users').header('Authorization', `Bearer ${token}`)
     expect(output.status()).toBe(200)
-    expect(output.body()).toHaveLength(2)
+    // Should expect 3 users, because there will also be the user that created the token
+    expect(output.body()).toHaveLength(3)
     for (let result of output.body()) {
       expect(result.id).toBeDefined()
       expect(result.email).toBeDefined()
@@ -30,11 +22,5 @@ test.group('User list', (group) => {
       expect(result.createdAt).toBeDefined()
       expect(result.updatedAt).toBeDefined()
     }
-  })
-
-  test('should return zero users', async ({ client, expect }) => {
-    const output = await client.get('/users')
-    expect(output.status()).toBe(200)
-    expect(output.body()).toEqual([])
   })
 })

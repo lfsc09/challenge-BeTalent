@@ -1,13 +1,14 @@
 import Product from '#models/product'
 import { test } from '@japa/runner'
-import { randomInt } from 'crypto'
-import Big from 'big.js'
+import { Faker, pt_BR, en } from '@faker-js/faker'
 import Client from '#models/client'
 import Transaction from '#models/transaction'
 import emitter from '@adonisjs/core/services/emitter'
 import TransactionProduct from '#models/transaction_product'
+import { ProductFactory } from '#database/factories/product_factory'
 
 test.group('Purchase new', (group) => {
+  const faker = new Faker({ locale: [pt_BR, en] })
   let productIds: string[] = []
 
   group.each.setup(async () => {
@@ -15,23 +16,19 @@ test.group('Purchase new', (group) => {
     await Product.query().delete()
     await Transaction.query().delete()
     await TransactionProduct.query().delete()
-    const createdProducts = await Product.createMany([
-      { name: 'product1', amount: new Big(10) },
-      { name: 'product2', amount: new Big(5.5) },
-    ])
-    productIds = createdProducts.map((product) => product.id)
+    productIds = (await ProductFactory.createMany(2)).map((product) => product.id)
   })
 
   test('should sucessfully generate purchase', async ({ client, expect, cleanup }) => {
     const input = {
-      clientName: 'client',
-      clientEmail: 'client@adonis.com',
+      clientName: faker.person.fullName(),
+      clientEmail: faker.internet.email(),
       products: productIds.map((id) => ({
         productId: id,
-        quantity: randomInt(10) + 1,
+        quantity: faker.number.int({ min: 1, max: 10 }),
       })),
-      cardNumbers: '1234567890123456',
-      cardCvv: '010',
+      cardNumbers: faker.finance.creditCardNumber('################'),
+      cardCvv: faker.finance.creditCardCVV(),
     }
     const events = emitter.fake()
     cleanup(() => {
@@ -44,9 +41,11 @@ test.group('Purchase new', (group) => {
 
   test('should fail to generate purchase [invalid data]', async ({ client, expect }) => {
     const input = {
-      clientName: 'client',
-      clientEmail: 'client@adonis.com',
+      clientName: faker.person.fullName(),
+      clientEmail: faker.internet.email(),
       products: productIds,
+      cardNumbers: faker.finance.creditCardNumber(),
+      cardCvv: faker.finance.creditCardCVV(),
     }
     const output = await client.post('/purchase').json(input)
     expect(output.status()).toBe(422)
