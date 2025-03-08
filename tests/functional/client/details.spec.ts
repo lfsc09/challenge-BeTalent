@@ -1,9 +1,10 @@
 import Client from '#models/client'
 import Transaction from '#models/transaction'
+import User from '#models/user'
 import { test } from '@japa/runner'
-import Big from 'big.js'
-import { DateTime } from 'luxon'
-import { TransactionStatus } from '../../../app/entities/transaction.js'
+import { generateUserToken } from '#tests/auth_generator'
+import { TransactionFactory } from '#database/factories/transaction_factory'
+import { ClientFactory } from '#database/factories/client_factory'
 
 test.group('Client details', (group) => {
   let clientId: string
@@ -11,22 +12,19 @@ test.group('Client details', (group) => {
   group.each.setup(async () => {
     await Client.query().delete()
     await Transaction.query().delete()
-    clientId = (await Client.create({ name: 'client 1', email: 'client@adonis.com' })).id
+    clientId = (await ClientFactory.create()).id
+  })
+
+  group.teardown(async () => {
+    await User.query().delete()
   })
 
   test('should return a detailed client information', async ({ client, expect }) => {
-    const input = {
-      id: crypto.randomUUID(),
-      clientId: clientId,
-      status: TransactionStatus.CREATED,
-      amount: new Big(10),
-      cardNumbers: '5569000000006063',
-      cardCvv: '010',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    }
-    await Transaction.create(input)
-    const output = await client.get(`/clients/${clientId}`)
+    const token = await generateUserToken('ADMIN')
+    await TransactionFactory.merge({ clientId }).create()
+    const output = await client
+      .get(`/clients/${clientId}`)
+      .header('Authorization', `Bearer ${token}`)
     expect(output.status()).toBe(200)
     expect(output.body().id).toBeDefined()
     expect(output.body().name).toBeDefined()
@@ -39,7 +37,10 @@ test.group('Client details', (group) => {
     client,
     expect,
   }) => {
-    const output = await client.get(`/clients/${crypto.randomUUID()}`)
+    const token = await generateUserToken('ADMIN')
+    const output = await client
+      .get(`/clients/${crypto.randomUUID()}`)
+      .header('Authorization', `Bearer ${token}`)
     expect(output.status()).toBe(404)
   })
 })

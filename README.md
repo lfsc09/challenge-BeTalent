@@ -43,8 +43,8 @@ Este teste prático foi desenvolvido com:
 - [x] Implementar Controller, Models, Migration e Testes de clientes.
 - [x] Implementar Controller, Models, Migration e Testes de gateways.
 - [x] Implementar Controller, Models, Migration e Testes de transações.
-- [ ] Gerar middleware the autenticação.
-- [ ] Gerar middleware de autorização para as roles.
+- [x] Gerar middleware the autenticação.
+- [x] Gerar middleware de autorização para as roles.
 
 </br>
 

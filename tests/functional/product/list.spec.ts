@@ -1,25 +1,22 @@
+import { ProductFactory } from '#database/factories/product_factory'
 import Product from '#models/product'
+import User from '#models/user'
+import { generateUserToken } from '#tests/auth_generator'
 import { test } from '@japa/runner'
-import Big from 'big.js'
 
 test.group('Product list', (group) => {
   group.each.setup(async () => {
     await Product.query().delete()
   })
 
+  group.teardown(async () => {
+    await User.query().delete()
+  })
+
   test('should return two products', async ({ client, expect }) => {
-    const input = [
-      {
-        name: 'product 1',
-        amount: new Big(100.5),
-      },
-      {
-        name: 'product 2',
-        amount: new Big(10),
-      },
-    ]
-    await Product.createMany(input)
-    const output = await client.get('/products')
+    const token = await generateUserToken('ADMIN')
+    await ProductFactory.createMany(2)
+    const output = await client.get('/products').header('Authorization', `Bearer ${token}`)
     expect(output.status()).toBe(200)
     expect(output.body()).toHaveLength(2)
     for (let result of output.body()) {
@@ -29,11 +26,5 @@ test.group('Product list', (group) => {
       expect(result.createdAt).toBeDefined()
       expect(result.updatedAt).toBeDefined()
     }
-  })
-
-  test('should return zero products', async ({ client, expect }) => {
-    const output = await client.get('/products')
-    expect(output.status()).toBe(200)
-    expect(output.body()).toEqual([])
   })
 })

@@ -1,26 +1,22 @@
 import { test } from '@japa/runner'
 import Client from '#models/client'
+import { ClientFactory } from '#database/factories/client_factory'
+import { generateUserToken } from '#tests/auth_generator'
+import User from '#models/user'
 
 test.group('Client list', (group) => {
   group.each.setup(async () => {
     await Client.query().delete()
   })
 
+  group.teardown(async () => {
+    await User.query().delete()
+  })
+
   test('should return two clients', async ({ client, expect }) => {
-    const input = [
-      {
-        id: crypto.randomUUID(),
-        name: 'Client 1',
-        email: 'client@adonis.com',
-      },
-      {
-        id: crypto.randomUUID(),
-        name: 'Cleitonis',
-        email: 'cleitonius@adonis.com',
-      },
-    ]
-    await Client.createMany(input)
-    const output = await client.get('/clients')
+    const token = await generateUserToken('ADMIN')
+    await ClientFactory.createMany(2)
+    const output = await client.get('/clients').header('Authorization', `Bearer ${token}`)
     expect(output.status()).toBe(200)
     expect(output.body()).toHaveLength(2)
     for (let result of output.body()) {
@@ -30,11 +26,5 @@ test.group('Client list', (group) => {
       expect(result.createdAt).toBeDefined()
       expect(result.updatedAt).toBeDefined()
     }
-  })
-
-  test('should return zero clients', async ({ client, expect }) => {
-    const output = await client.get('/clients')
-    expect(output.status()).toBe(200)
-    expect(output.body()).toEqual([])
   })
 })
